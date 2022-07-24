@@ -6,6 +6,8 @@ const router = express.Router()
 const Product = require('../models/products')
 const Users = require('../models/users')
 
+const bycrypt = require('bcryptjs')
+
 //อัพโหลดไฟล์
 const multer = require('multer')
 
@@ -33,6 +35,10 @@ router.get('/',(req,res)=>{
 
 router.get('/signup',(req,res)=>{
     res.render('register')
+})
+
+router.get('/signin',(req,res)=>{
+    res.render('login')
 })
 
 router.get('/add-product',(req,res)=>{
@@ -79,18 +85,40 @@ router.get('/:id',(req,res)=>{
 
 // **********  Post  **********
 
-router.post('/signup', (req,res)=>{
-    let data = new Users({
-        name:req.body.name,
-        email:req.body.email,
-        username:req.body.username,
-        password:req.body.password
-    })
-    Users.saveProduct(data, (err)=>{
-        if(err) throw(err)
-        else {
-            res.redirect('/')
+router.post('/signin', (req, res)=>{
+    let username = req.body.username
+    let password = req.body.password
+
+    Users.findOne({$or: [{username:username}, {email:username}]})
+    .then(user =>{
+        if(user) {
+            bycrypt.compare(password, user.password, function(err, result) {
+                if(err) throw(err)
+                if(result) {
+                    res.render('Success')
+                }
+            })
+        } else {
+            res.render('404')
         }
+    }) 
+})
+
+router.post('/signup', (req,res)=>{
+    bycrypt.hash(req.body.password, 10, function(err, hashedPass) {
+        if(err) throw(err)
+        let data = new Users({
+            name:req.body.name,
+            email:req.body.email,
+            username:req.body.username,
+            password:hashedPass
+        })
+        Users.saveProduct(data, (err)=>{
+            if(err) throw(err)
+            else {
+                res.redirect('/')
+            }
+        })
     })
 })
 
