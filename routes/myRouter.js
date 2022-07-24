@@ -88,7 +88,9 @@ router.post('/signup', (req,res)=>{
     })
     Users.saveProduct(data, (err)=>{
         if(err) throw(err)
-        res.redirect('/')
+        else {
+            res.redirect('/')
+        }
     })
 })
 
