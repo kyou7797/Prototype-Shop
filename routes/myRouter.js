@@ -87,16 +87,30 @@ router.get('/:id',(req,res)=>{
 
 router.post('/addcart', (req, res)=>{
     let id = req.body.product_id
+    let name = req.body.product_name
+    let price = req.body.product_price
+
     if(!req.cookies.Id) {
         res.cookie('Id', [id])
+        res.cookie('Name', [name])
+        res.cookie('Price', [price])
     }
     else {
         let oldId = req.cookies.Id
+        let oldName = req.cookies.Name
+        let oldPrice = req.cookies.Price
     
         oldId.push(id)
+        oldName.push(name)
+        oldPrice.push(price)
+
         res.clearCookie('Id');
+        res.clearCookie('Name');
+        res.clearCookie('Price');
     
         res.cookie('Id', oldId)
+        res.cookie('Name', oldName)
+        res.cookie('Price', oldPrice)
     }
 
     res.redirect('/')
