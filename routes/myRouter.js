@@ -85,6 +85,23 @@ router.get('/:id',(req,res)=>{
 
 // **********  Post  **********
 
+router.post('/addcart', (req, res)=>{
+    let id = req.body.product_id
+    if(!req.cookies.Id) {
+        res.cookie('Id', [id])
+    }
+    else {
+        let oldId = req.cookies.Id
+    
+        oldId.push(id)
+        res.clearCookie('Id');
+    
+        res.cookie('Id', oldId)
+    }
+
+    res.redirect('/')
+})
+
 router.post('/signin', (req, res)=>{
     let username = req.body.username
     let password = req.body.password
